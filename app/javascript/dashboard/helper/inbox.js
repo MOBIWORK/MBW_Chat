@@ -10,6 +10,7 @@ export const INBOX_TYPES = {
   LINE: 'Channel::Line',
   SMS: 'Channel::Sms',
   INSTAGRAM: 'Channel::Instagram',
+  ZALO: 'Channel::ZaloOa',
 };
 
 const INBOX_ICON_MAP_FILL = {

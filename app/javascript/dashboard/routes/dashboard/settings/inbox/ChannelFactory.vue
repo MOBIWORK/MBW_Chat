@@ -1,6 +1,7 @@
 <script>
 import { defineComponent, h } from 'vue';
 import Facebook from './channels/Facebook.vue';
+import Zalo from './channels/Zalo.vue';
 import Website from './channels/Website.vue';
 import Twitter from './channels/Twitter.vue';
 import Api from './channels/Api.vue';
@@ -13,6 +14,7 @@ import Instagram from './channels/Instagram.vue';
 
 const channelViewList = {
   facebook: Facebook,
+  zalo: Zalo,
   website: Website,
   twitter: Twitter,
   api: Api,

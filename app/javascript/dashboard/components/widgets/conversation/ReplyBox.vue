@@ -275,6 +275,7 @@ export default {
         this.isATelegramChannel ||
         this.isALineChannel ||
         this.isAnInstagramChannel
+        this.isAZaloOaChannel
       );
     },
     replyButtonLabel() {

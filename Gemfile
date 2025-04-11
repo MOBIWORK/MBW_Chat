@@ -180,6 +180,8 @@ gem 'ruby-openai'
 
 gem 'shopify_api'
 
+gem 'digest'
+
 ### Gems required only in specific deployment environments ###
 ##############################################################
 
