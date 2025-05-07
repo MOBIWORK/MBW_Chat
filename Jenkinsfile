@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         WORK_DIR = "docker"  // Thư mục chứa Dockerfile của Chatwoot
-        DOCKER_IMAGE_NAME = "MBW_Chat"
+        DOCKER_IMAGE_NAME = "mbw_chat"
         REGISTRY_URL = "registry.digitalocean.com"
         REGISTRY_NAME = "testerpnext"
         PLATFORM = "linux/amd64"
