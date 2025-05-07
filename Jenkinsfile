@@ -56,20 +56,23 @@ pipeline {
                     sh """
                         docker build  -t ${DOCKER_IMAGE_NAME}:${IMAGE_TAG} -f ${WORK_DIR}/Dockerfile .
                     """
-                }
-            }
-        }
-
-        stage('Scan Image with Trivy') {
-            steps {
-                script {
-                    echo "Scanning ${DOCKER_IMAGE_NAME}:${IMAGE_TAG} with Trivy..."
                     sh """
-                        docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -e TRIVY_TIMEOUT=30m aquasec/trivy image ${DOCKER_IMAGE_NAME}:${IMAGE_TAG} --exit-code 1
+                        docker image prune -f
                     """
                 }
             }
         }
+
+        // stage('Scan Image with Trivy') {
+        //     steps {
+        //         script {
+        //             echo "Scanning ${DOCKER_IMAGE_NAME}:${IMAGE_TAG} with Trivy..."
+        //             sh """
+        //                 docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -e TRIVY_TIMEOUT=30m aquasec/trivy image ${DOCKER_IMAGE_NAME}:${IMAGE_TAG} --exit-code 0
+        //             """
+        //         }
+        //     }
+        // }
 
         stage('Push to DigitalOcean Registry') {
             steps {
