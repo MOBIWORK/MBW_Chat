@@ -64,7 +64,9 @@ pipeline {
             steps {
                 script {
                     echo "Scanning ${DOCKER_IMAGE_NAME}:${IMAGE_TAG} with Trivy..."
-                    sh "trivy image ${DOCKER_IMAGE_NAME}:${IMAGE_TAG} --exit-code 1"
+                    sh """
+                        docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image ${DOCKER_IMAGE_NAME}:${IMAGE_TAG} --exit-code 1
+                    """
                 }
             }
         }
