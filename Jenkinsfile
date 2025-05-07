@@ -6,7 +6,7 @@ pipeline {
         DOCKER_IMAGE_NAME = "mbw_chat"
         REGISTRY_URL = "registry.digitalocean.com"
         REGISTRY_NAME = "testerpnext"
-        PLATFORM = "linux/amd64"
+    //    PLATFORM = "linux/amd64"
     }
 
     stages {
@@ -52,8 +52,11 @@ pipeline {
                 script {
                     def tag = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
                     env.IMAGE_TAG = tag
+                    sh 'docker --version'
+                    sh 'docker buildx version'
+                    sh 'docker buildx create --use'
                     sh """
-                        docker buildx build --platform ${PLATFORM} -t ${DOCKER_IMAGE_NAME}:${IMAGE_TAG} -f ${WORK_DIR}/Dockerfile .
+                        docker buildx build  -t ${DOCKER_IMAGE_NAME}:${IMAGE_TAG} -f ${WORK_DIR}/Dockerfile .
                     """
                 }
             }
