@@ -53,10 +53,8 @@ pipeline {
                     def tag = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
                     env.IMAGE_TAG = tag
                     sh 'docker --version'
-                    sh 'docker buildx version'
-                    sh 'docker buildx create --use'
                     sh """
-                        docker buildx build  -t ${DOCKER_IMAGE_NAME}:${IMAGE_TAG} -f ${WORK_DIR}/Dockerfile .
+                        docker build  -t ${DOCKER_IMAGE_NAME}:${IMAGE_TAG} -f ${WORK_DIR}/Dockerfile .
                     """
                 }
             }
