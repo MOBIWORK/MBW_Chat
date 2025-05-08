@@ -78,11 +78,13 @@ pipeline {
             steps {
                 withCredentials([string(credentialsId: 'do-api-token', variable: 'DO_API_TOKEN')]) {
                     script {
-                        sh """
+                        sh '''
+                            export HOME=\$(pwd)
+                            mkdir -p \$HOME/.docker
                             echo $DO_API_TOKEN | docker login ${REGISTRY_URL} -u $DO_API_TOKEN -p $DO_API_TOKEN
                             docker push ${FULL_IMAGE}
                             docker rmi ${FULL_IMAGE}
-                        """
+                        '''
                     }
                 }
             }
