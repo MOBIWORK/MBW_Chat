@@ -79,7 +79,7 @@ pipeline {
                 withCredentials([string(credentialsId: 'do-api-token', variable: 'DO_API_TOKEN')]) {
                     script {
                         sh """
-                            echo $DO_API_TOKEN | docker login ${REGISTRY_URL} -u $DO_API_TOKEN --password-stdin
+                            echo $DO_API_TOKEN | docker login ${REGISTRY_URL} -u $DO_API_TOKEN -p $DO_API_TOKEN
                             docker tag ${REGISTRY_URL}/${REGISTRY_NAME}/${DOCKER_IMAGE_NAME}:${IMAGE_TAG} ${FULL_IMAGE}
                             docker push ${FULL_IMAGE}
                             docker rmi ${FULL_IMAGE}
