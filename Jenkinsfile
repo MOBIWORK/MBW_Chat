@@ -52,9 +52,9 @@ pipeline {
                 script {
                     def tag = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
                     env.IMAGE_TAG = tag
-                    sh 'docker --version'
+                    env.FULL_IMAGE = "${REGISTRY_URL}/${REGISTRY_NAME}/${DOCKER_IMAGE_NAME}:${IMAGE_TAG}"
                     sh """
-                        docker build  -t ${DOCKER_IMAGE_NAME}:${IMAGE_TAG} -f ${WORK_DIR}/Dockerfile .
+                        docker build -t ${FULL_IMAGE} -f ${WORK_DIR}/Dockerfile .
                     """
                     sh """
                         docker image prune -f
@@ -80,7 +80,6 @@ pipeline {
                     script {
                         sh """
                             echo $DO_API_TOKEN | docker login ${REGISTRY_URL} -u $DO_API_TOKEN -p $DO_API_TOKEN
-                            docker tag ${REGISTRY_URL}/${REGISTRY_NAME}/${DOCKER_IMAGE_NAME}:${IMAGE_TAG} ${FULL_IMAGE}
                             docker push ${FULL_IMAGE}
                             docker rmi ${FULL_IMAGE}
                         """
