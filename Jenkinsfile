@@ -54,12 +54,12 @@ pipeline {
                         env.IMAGE_TAG = tag
                         env.FULL_IMAGE = "${REGISTRY_URL}/${REGISTRY_NAME}/${DOCKER_IMAGE_NAME}:${IMAGE_TAG}"
                         
-                        sh """
-                            export PATH=\$HOME/.docker/cli-plugins:\$PATH
-                            docker buildx version
-                            docker buildx create --use --name mbw-builder || echo 'builder exists'
-                            docker buildx inspect --bootstrap
-                        """
+                        // sh """
+                        //     export PATH=\$HOME/.docker/cli-plugins:\$PATH
+                        //     docker buildx version
+                        //     docker buildx create --use --name mbw-builder || echo 'builder exists'
+                        //     docker buildx inspect --bootstrap
+                        // """
                         sh """
                             docker buildx build --platform linux/amd64 -t ${FULL_IMAGE} -f ${WORK_DIR}/Dockerfile .
                         """
