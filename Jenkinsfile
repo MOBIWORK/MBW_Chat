@@ -55,6 +55,8 @@ pipeline {
                         env.FULL_IMAGE = "${REGISTRY_URL}/${REGISTRY_NAME}/${DOCKER_IMAGE_NAME}:${IMAGE_TAG}"
                         
                         sh """
+                            export PATH=\$HOME/.docker/cli-plugins:\$PATH
+                            docker buildx version
                             docker buildx create --use --name mbw-builder || echo 'builder exists'
                             docker buildx inspect --bootstrap
                         """
