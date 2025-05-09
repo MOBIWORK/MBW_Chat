@@ -113,9 +113,6 @@ pipeline {
                                         cd /home/vtdc/docker/chatwoot/MBW_chatwoot &&
                                         sed -i "/^CHATWOOT_IMAGE=/d" .env &&
                                         echo "CHATWOOT_IMAGE=${FULL_IMAGE}" >> .env
-                                        // docker compose pull &&
-                                        // docker compose down &&
-                                        // docker compose up -d
                                     '
                                 """
                             } else {
