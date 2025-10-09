@@ -17,11 +17,12 @@ RSpec.describe Captain::Copilot::ChatService do
   let(:previous_history) { [{ role: copilot_message.message_type, content: copilot_message.message['content'] }] }
 
   let(:config) do
-    { user_id: user.id, thread_id: copilot_thread.id, conversation_id: conversation.display_id }
+    { user_id: user.id, copilot_thread_id: copilot_thread.id, conversation_id: conversation.display_id }
   end
 
   before do
     create(:installation_config, name: 'CAPTAIN_OPEN_AI_API_KEY', value: 'test-key')
+    create(:installation_config, name: 'CAPTAIN_OPEN_AI_ENDPOINT', value: 'https://api.openai.com/')
     allow(OpenAI::Client).to receive(:new).and_return(mock_openai_client)
     allow(mock_openai_client).to receive(:chat).and_return({
       choices: [{ message: { content: '{ "content": "Hey" }' } }]
@@ -46,6 +47,48 @@ RSpec.describe Captain::Copilot::ChatService do
       expect(messages.first[:role]).to eq('system')
       expect(messages.second[:role]).to eq('system')
       expect(messages.second[:content]).to include(account.id.to_s)
+    end
+
+    it 'initializes OpenAI client with configured endpoint' do
+      expect(OpenAI::Client).to receive(:new).with(
+        access_token: 'test-key',
+        uri_base: 'https://api.openai.com/',
+        log_errors: Rails.env.development?
+      )
+
+      described_class.new(assistant, config)
+    end
+
+    context 'when CAPTAIN_OPEN_AI_ENDPOINT is not configured' do
+      before do
+        InstallationConfig.find_by(name: 'CAPTAIN_OPEN_AI_ENDPOINT')&.destroy
+      end
+
+      it 'uses default OpenAI endpoint' do
+        expect(OpenAI::Client).to receive(:new).with(
+          access_token: 'test-key',
+          uri_base: 'https://api.openai.com/',
+          log_errors: Rails.env.development?
+        )
+
+        described_class.new(assistant, config)
+      end
+    end
+
+    context 'when custom endpoint is configured' do
+      before do
+        InstallationConfig.find_by(name: 'CAPTAIN_OPEN_AI_ENDPOINT').update!(value: 'https://custom.azure.com/')
+      end
+
+      it 'uses custom endpoint for OpenAI client' do
+        expect(OpenAI::Client).to receive(:new).with(
+          access_token: 'test-key',
+          uri_base: 'https://custom.azure.com/',
+          log_errors: Rails.env.development?
+        )
+
+        described_class.new(assistant, config)
+      end
     end
   end
 
@@ -157,16 +200,16 @@ RSpec.describe Captain::Copilot::ChatService do
   end
 
   describe '#setup_message_history' do
-    context 'when thread_id is present' do
+    context 'when copilot_thread_id is present' do
       it 'finds the copilot thread and sets previous history from it' do
-        service = described_class.new(assistant, { thread_id: copilot_thread.id })
+        service = described_class.new(assistant, { copilot_thread_id: copilot_thread.id })
 
         expect(service.copilot_thread).to eq(copilot_thread)
         expect(service.previous_history).to eq previous_history
       end
     end
 
-    context 'when thread_id is not present' do
+    context 'when copilot_thread_id is not present' do
       it 'uses previous_history from config if present' do
         custom_history = [{ role: 'user', content: 'Custom message' }]
         service = described_class.new(assistant, { previous_history: custom_history })
@@ -222,7 +265,7 @@ RSpec.describe Captain::Copilot::ChatService do
         }.with_indifferent_access)
 
         expect do
-          described_class.new(assistant, { thread_id: copilot_thread.id }).generate_response('Hello')
+          described_class.new(assistant, { copilot_thread_id: copilot_thread.id }).generate_response('Hello')
         end.to change(CopilotMessage, :count).by(1)
 
         last_message = CopilotMessage.last
